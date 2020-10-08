@@ -1,0 +1,7 @@
+{
+  "name": "ophelos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
