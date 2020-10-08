@@ -1,9 +1,16 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import React from 'react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonModal, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
+import React, { useState } from 'react';
 import './Home.css';
+import { NewEntry } from '../components/NewEntry'
 
 const Home: React.FC = () => {
+
+  const [showModal, setShowModal] = useState(false);
+
+  function onEntryCompleted() {
+    // history.push('/homePage');
+}
+
   return (
     <IonPage>
       <IonHeader>
@@ -14,10 +21,21 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
+            <IonTitle size="large">First edit</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer />
+        <IonButton expand="full" color="light" onClick={() => setShowModal(true)}>
+          Add an entry
+                </IonButton>
+        <IonModal
+          isOpen={showModal}
+          swipeToClose={true}
+        >
+          <NewEntry
+            onEntryCompleted={() => onEntryCompleted()}
+            close={() => setShowModal(false)}
+          />
+        </IonModal>
       </IonContent>
     </IonPage>
   );
