@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { IonSpinner, IonModal, IonContent, IonPage, IonInput, IonButton, IonThumbnail, IonImg, IonToast } from '@ionic/react';
+import { IonModal, IonContent, IonPage, IonInput, IonButton, IonToast } from '@ionic/react';
 import './Login.css';
-import { loginUser, isUserLoggedIn, getUid, getCollection, logout } from '../firebaseConfig';
+import { loginUser, isUserLoggedIn } from '../firebaseConfig';
 import { useHistory } from "react-router-dom";
 import { RegisterUser } from '../components/RegisterUser';
 

@@ -118,28 +118,28 @@ export class RegisterUser extends React.Component<IRegisterUserProps> {
                         <IonLabel>Name</IonLabel>
                         <div className="row">
                             <IonInput placeholder="Enter here..." type="text" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'name')} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.nameIcon = el as HTMLIonIconElement} />
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.nameIcon = el as HTMLIonIconElement} />
                         </div>
                     </div>
                     <div className="padding-container">
                         <IonLabel>Email</IonLabel>
                         <div className="row">
                             <IonInput placeholder="Enter here..." type="email" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'email')} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.emailIcon = el as HTMLIonIconElement} />
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.emailIcon = el as HTMLIonIconElement} />
                         </div>
                     </div>
                     <div className="padding-container">
                         <IonLabel>Password</IonLabel>
                         <div className="row">
                             <IonInput placeholder="Enter here..." type="password" onIonChange={(ev) => this.onPasswordChanged(ev.detail.value as string, false)} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.passwordIcon = el as HTMLIonIconElement}/>
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.passwordIcon = el as HTMLIonIconElement}/>
                         </div>
                     </div>
                     <div className="padding-container">
                         <IonLabel>Repeat password</IonLabel>
                         <div className="row">
                             <IonInput placeholder="Enter here.." type="password" onIonChange={(ev) => this.onPasswordChanged(ev.detail.value as string, true)} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.passwordRepeatIcon = el as HTMLIonIconElement}/>
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.passwordRepeatIcon = el as HTMLIonIconElement}/>
                         </div>
                     </div>
                     <div className="padding-container">
@@ -147,21 +147,21 @@ export class RegisterUser extends React.Component<IRegisterUserProps> {
 
                         <div className="row">
                             <IonInput placeholder="Enter here..." type="tel" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'phone')} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.phoneIcon = el as HTMLIonIconElement}/>
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.phoneIcon = el as HTMLIonIconElement}/>
                         </div>
                     </div>
                     <div className="padding-container">
                         <IonLabel>Address</IonLabel>
                         <div className="row">
                             <IonInput placeholder="Enter here..." type="text" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'address')} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.addressIcon = el as HTMLIonIconElement}/>
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.addressIcon = el as HTMLIonIconElement}/>
                         </div>
                     </div>
                     <div className="padding-container">
                         <IonLabel>Date of Birth</IonLabel>
                         <div className="row">
                             <IonDatetime placeholder={'01 Jan 2000'} displayFormat={"DD MMM YYYY"} onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'dob')} />
-                            <IonIcon size="large" icon={checkmarkCircleOutline} ref={(el) => this.dobIcon = el as HTMLIonIconElement}/>
+                            <IonIcon className="hide" size="large" icon={checkmarkCircleOutline} ref={(el) => this.dobIcon = el as HTMLIonIconElement}/>
                         </div>
                     </div>
 
