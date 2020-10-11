@@ -23,3 +23,7 @@
     justify-content: center;
     height: 4rem;
 }
+
+ion-icon {
+    display: none;
+}
