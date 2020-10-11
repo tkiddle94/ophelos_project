@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IonSpinner, IonModal, IonContent, IonPage, IonInput, IonButton, IonThumbnail, IonImg, IonToast } from '@ionic/react';
 import './Login.css';
-import { loginUser, isUserLoggedIn, getUid, getCollection } from '../firebaseConfig';
+import { loginUser, isUserLoggedIn, getUid, getCollection, logout } from '../firebaseConfig';
 import { useHistory } from "react-router-dom";
 import { RegisterUser } from '../components/RegisterUser';
 
@@ -14,43 +14,23 @@ const Login: React.FC = () => {
     let errorMessage: string = 'Wrong email or password please try again.';
     const [showToast, setShowToast] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     const history = useHistory();
-    // React.useEffect(() => {
-    //     isUserLoggedIn().then((ret) => {
-    //         if (ret) {
-    //             history.push('/homePage');
-    //         } else {
-    //             setIsLoading(false);
-    //         }
-    //     });
-    //     setTimeout(() => {
+    React.useEffect(() => {
+        isUserLoggedIn().then((ret) => {
+            if (ret) {
+                history.push('/homePage');
+            } 
+        });
+        setTimeout(() => {
             
-    //         isUserLoggedIn().then((ret) => {
-    //             if (ret) {
-    //                 loadUserData();
-    //                 history.push('/homePage');
-    //             } else {
-    //                 setIsLoading(false);
-    //             }
-    //         });
-    //     }, 1000);
-    //     setIsLoading(false);
-    // }, [])
-
-    // function loadUserData() {
-    //     getUid().then((ret) => {
-    //         if (ret) {
-    //             getCollection('users', ret).then((userData) => {
-    //                 if (userData?.darkMode) {
-    //                     document.body.classList.add('dark');
-    //                     statusBar?.backgroundColorByHexString('#ffffff');
-    //                 }
-    //             });
-    //         }
-    //     });
-    // }
+            isUserLoggedIn().then((ret) => {
+                if (ret) {
+                    history.push('/homePage');
+                } 
+            });
+        }, 1000);
+    }, [])
 
     function onLogin() {
         loginUser(email as string, password as string).then((ret) => {
@@ -91,9 +71,11 @@ const Login: React.FC = () => {
 
     return (
         <IonPage>
-            {isLoading && <IonContent>
+            <IonContent>
                 <div className="outer-form">
-                    <div className="header-container"/>
+                    <div className="header-container">
+                        {`I&E Statment Logger`}
+                    </div>
                     <div className="login-form">
                         <div className="padding-container">
                             <IonInput placeholder="Email" type="email" onIonChange={(ev) => onEmailChanged(ev.detail.value!)} />
@@ -129,8 +111,7 @@ const Login: React.FC = () => {
                     onDidDismiss={() => setShowToast(false)}
                     duration={2000}
                 />
-            </IonContent>}
-            {!isLoading && <IonSpinner name="crescent" />}
+            </IonContent>
         </IonPage>
     );
 };

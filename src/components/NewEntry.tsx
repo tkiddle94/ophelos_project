@@ -1,7 +1,9 @@
 import React from 'react';
-import { IonInput, IonButton, IonPage, IonLabel, IonAlert, IonContent, IonTitle, IonToolbar, IonThumbnail, IonIcon, IonHeader, IonDatetime } from '@ionic/react';
-import './RegisterUser.css';
-import { close } from 'ionicons/icons';
+import { IonDatetime, IonInput, IonButton, IonPage, IonLabel, IonAlert, IonContent, IonTitle, IonToolbar, IonThumbnail, IonIcon, IonHeader } from '@ionic/react';
+import './NewEntry.css';
+import { close, addOutline } from 'ionicons/icons';
+import { getUid, writeToCollection } from '../firebaseConfig';
+import * as firebase from 'firebase'
 
 interface INewEntryProps {
     onEntryCompleted: any;
@@ -10,55 +12,79 @@ interface INewEntryProps {
 
 export class NewEntry extends React.Component<INewEntryProps> {
 
-    private emailValidity: boolean;
-    private password: string;
-    private repeatedPassword: string;
-    private userInfo: { name: string, email: string, phone: number, address: string, dob: string };
-    private warningMessage: string = '';
-    private registerButton: HTMLIonButtonElement;
+    private income: Array<{ label: string, value: number }> = [{ label: '', value: 0 }];
+    private expenditure: Array<{ label: string, value: number }> = [{ label: '', value: 0 }];
+    private saveButton: HTMLIonButtonElement;
+    private uid: string;
+    private month: string = '';
+    private showAlert: boolean = false;
 
     get isValid(): boolean {
-        let formValidity: boolean = this.password?.length > 5 && this.repeatedPassword === this.password && this.emailValidity;
-        formValidity = formValidity && this.userInfo.address?.length > 0 && this.userInfo.dob?.length > 0 && this.userInfo.phone > 0 && this.userInfo.name?.length > 0;
-        return formValidity;
+        return this.month?.length > 0 && this.income?.findIndex((item) => item.value === 0 || item.label?.length === 0) === -1 && this.expenditure?.findIndex((item) => item.value === 0 || item.label?.length === 0) === -1;
     }
 
-    onEmailChanged(newEmail: string) {
-        this.userInfo.email = newEmail;
-        if (newEmail && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(newEmail)) {
-            this.emailValidity = true;
-        } else {
-            this.emailValidity = false
-        }
-        this.validitateRegisterButton();
+    componentDidMount() {
+        this.loadUserData();
     }
 
-    onPasswordChanged(newPassword: string, repeat: boolean) {
-        if (repeat) {
-            this.repeatedPassword = newPassword;
-        } else {
-            this.password = newPassword
-        }
-        this.validitateRegisterButton();
+    loadUserData() {
+        getUid().then((ret) => {
+            if (ret) {
+                this.uid = ret;
+
+            }
+        });
     }
 
-    onAttributeChanged(value: string, attr: string) {
-        if (attr === 'email') {
-            if (value && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
-                this.emailValidity = true;
+    saveEntry() {
+        let totalIncome = 0;
+        let totalExpenditure = 0;
+        this.income?.forEach((inc) => totalIncome += inc.value);
+        this.expenditure?.forEach((expen) => totalExpenditure += expen.value);
+        let data = { [`${this.month}`]: { expenditure: this.expenditure, income: this.income, ieRating: totalExpenditure / totalIncome, disposableIncome: totalIncome - totalExpenditure } };
+
+        writeToCollection('ieStatement', this.uid, data).then((ret) => {
+            this.showAlert = true;
+            this.forceUpdate();
+        });
+    }
+
+    closeModal() {
+        this.props.onEntryCompleted();
+    }
+
+
+    onItemChanged(type: string, index: number, attr: string, value: string) {
+        if (type === 'income') {
+            if (attr === 'label') {
+                this.income[index].label = value;
             } else {
-                this.emailValidity = false
+                this.income[index].value = value ? parseInt(value) : 0;
+            }
+        } else if (type === 'expenditure') {
+            if (attr === 'label') {
+                this.expenditure[index].label = value;
+            } else {
+                this.expenditure[index].value = value ? parseInt(value) : 0;
             }
         }
-        this.userInfo = { ...this.userInfo, [attr]: value };
-        this.validitateRegisterButton();
+        this.validateSaveButton();
+    }
+
+    addNewEntry(attr: string) {
+        if (attr === 'income') {
+            this.income.push({ label: '', value: 0 });
+        } else if (attr === 'expenditure') {
+            this.expenditure.push({ label: '', value: 0 });
+        }
+        this.forceUpdate();
     }
 
 
-    validitateRegisterButton() {
+    validateSaveButton() {
         let isDisabled = !this.isValid;
-        this.registerButton.color = isDisabled ? 'secondary' : 'primary';
-        this.registerButton.disabled = isDisabled;
+        this.saveButton.color = isDisabled ? 'secondary' : 'primary';
+        this.saveButton.disabled = isDisabled;
     }
 
     render() {
@@ -68,55 +94,62 @@ export class NewEntry extends React.Component<INewEntryProps> {
                     <IonThumbnail class="centered" slot="start" onClick={() => this.props.close()}>
                         <IonIcon size="large" icon={close} />
                     </IonThumbnail>
-                    <IonTitle>Register</IonTitle>
+                    <IonTitle>Month Entry</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
                 <div className="entry-form">
                     <div className="padding-container">
-                        <IonLabel>Name</IonLabel>
+                        <IonLabel>Month</IonLabel>
+                        <IonDatetime placeholder={'Jan 2000'} displayFormat={"MMM YYYY"} onIonChange={(ev) => {
+                            this.month = ev.detail.value?.slice(0, 7) as string;
+                            this.validateSaveButton();
+                        }} />
 
-                        <IonInput placeholder="Enter here..." type="text" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'name')} />
                     </div>
                     <div className="padding-container">
-                        <IonLabel>Email</IonLabel>
+                        <IonLabel>Income</IonLabel>
+                        {this.income.map((_item, index) => {
+                            return <div className="row-container">
+                                <IonInput placeholder="Label e.g Salary" type="text" onIonChange={(ev) => this.onItemChanged('income', index, 'label', ev.detail.value as string)} />
+                                <div className="text">£</div>
+                                <IonInput placeholder="Amount" type="number" onIonChange={(ev) => this.onItemChanged('income', index, 'value', ev.detail.value as string)} />
+                            </div>
+                        })}
 
-                        <IonInput placeholder="Enter here..." type="email" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'email')} />
+                        <div className="button-container">
+                            <IonButton shape="round" color="primary" onClick={() => this.addNewEntry('income')}>
+                                <IonIcon size="large" icon={addOutline} />
+                            </IonButton>
+                        </div>
                     </div>
                     <div className="padding-container">
-                        <IonLabel>Password</IonLabel>
-                        <IonInput placeholder="Enter here..." type="password" onIonChange={(ev) => this.onPasswordChanged(ev.detail.value as string, false)} />
+                        <IonLabel>Expenditure</IonLabel>
+                        {this.expenditure.map((_item, index) => {
+                            return <div className="row-container">
+                                <IonInput placeholder="Label e.g Mortgage" type="text" onIonChange={(ev) => this.onItemChanged('expenditure', index, 'label', ev.detail.value as string)} />
+                                <div className="text">£</div>
+                                <IonInput placeholder="Amount" type="number" onIonChange={(ev) => this.onItemChanged('expenditure', index, 'value', ev.detail.value as string)} />
+                            </div>
+                        })}
+                        <div className="button-container">
+                            <IonButton shape="round" color="primary" onClick={() => this.addNewEntry('expenditure')}>
+                                <IonIcon size="large" icon={addOutline} />
+                            </IonButton>
+                        </div>
                     </div>
                     <div className="padding-container">
-                        <IonLabel>Repeat password</IonLabel>
-                        <IonInput placeholder="Enter here.." type="password" onIonChange={(ev) => this.onPasswordChanged(ev.detail.value as string, true)} />
-                    </div>
-                    <div className="padding-container">
-                        <IonLabel>Phone number</IonLabel>
-
-                        <IonInput placeholder="Enter here..." type="tel" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'phone')} />
-                    </div>
-                    <div className="padding-container">
-                        <IonLabel>Address</IonLabel>
-                        <IonInput placeholder="Enter here..." type="text" onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'address')} />
-                    </div>
-                    <div className="padding-container">
-                        <IonLabel>Date of Birth</IonLabel>
-                        <IonDatetime placeholder={'01 Jan 2000'} displayFormat={"DD MMM YYYY"} onIonChange={(ev) => this.onAttributeChanged(ev.detail.value as string, 'dob')}/>
-                    </div>
-
-                    <div className="padding-container">
-                        <IonButton expand="full" shape="round" disabled={true} color="secondary" ref={(el) => this.registerButton = el as HTMLIonButtonElement}>
-                            Register
+                        <IonButton onClick={() => this.saveEntry()} expand="full" shape="round" disabled={true} color="secondary" ref={(el) => this.saveButton = el as HTMLIonButtonElement}>
+                            Save
             </IonButton>
                     </div>
                 </div>
             </IonContent>
             <IonAlert
-                isOpen={this.warningMessage?.length > 0}
-                onDidDismiss={() => this.warningMessage = ''}
-                header={'Error'}
-                message={this.warningMessage}
+                isOpen={this.showAlert}
+                onDidDismiss={() => this.closeModal()}
+                header={'Success'}
+                message={'Your entry has been saved'}
                 buttons={['Okay']}
             />
         </IonPage>;

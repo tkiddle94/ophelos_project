@@ -16,10 +16,22 @@
     width: 100%;
     padding: 1rem 0;
 }
+.row-container {
+    display: flex;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+}
 .header-container {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 4rem;
+}
+.text {
+    display: flex;
+    align-items: center;
 }
