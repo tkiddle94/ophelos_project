@@ -1,0 +1,37 @@
+.outer-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-content: center;
+    height: 100%;
+}
+.entry-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    padding: 2rem;
+}
+.padding-container {
+    width: 100%;
+    padding: 1rem 0;
+}
+.row-container {
+    display: flex;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+}
+.header-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4rem;
+}
+.text {
+    display: flex;
+    align-items: center;
+}
