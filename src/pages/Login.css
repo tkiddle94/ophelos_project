@@ -12,9 +12,11 @@
     align-content: center;
     padding: 2rem;
 }
-.padding-container {
+.padding-container-login {
     width: 100%;
     padding: 1rem 0;
+    max-width: 25rem;
+    align-self: center;
 }
 .header-container {
     width: 100%;

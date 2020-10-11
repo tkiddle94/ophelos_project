@@ -77,13 +77,13 @@ const Login: React.FC = () => {
                         {`I&E Statment Logger`}
                     </div>
                     <div className="login-form">
-                        <div className="padding-container">
+                        <div className="padding-container-login">
                             <IonInput placeholder="Email" type="email" onIonChange={(ev) => onEmailChanged(ev.detail.value!)} />
                         </div>
-                        <div className="padding-container">
+                        <div className="padding-container-login">
                             <IonInput placeholder="Password" type="password" onIonChange={(ev) => onPasswordChanged(ev.detail.value!)} />
                         </div>
-                        <div className="padding-container">
+                        <div className="padding-container-login">
                             <IonButton expand="full" shape="round" onClick={() => onLogin()} disabled={true} color="secondary" ref={(el) => loginButton = el as HTMLIonButtonElement}>
                                 Login
                             </IonButton>

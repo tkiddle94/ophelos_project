@@ -14,6 +14,7 @@ export class NewEntry extends React.Component<INewEntryProps> {
 
     private income: Array<{ label: string, value: number }> = [{ label: '', value: 0 }];
     private expenditure: Array<{ label: string, value: number }> = [{ label: '', value: 0 }];
+    private debt: Array<{ label: string, value: number }> = [{ label: '', value: 0 }];
     private saveButton: HTMLIonButtonElement;
     private uid: string;
     private month: string = '';
@@ -41,7 +42,17 @@ export class NewEntry extends React.Component<INewEntryProps> {
         let totalExpenditure = 0;
         this.income?.forEach((inc) => totalIncome += inc.value);
         this.expenditure?.forEach((expen) => totalExpenditure += expen.value);
-        let data = { [`${this.month}`]: { expenditure: this.expenditure, income: this.income, ieRating: totalExpenditure / totalIncome, disposableIncome: totalIncome - totalExpenditure } };
+        let debt = this.debt?.filter((deb) => deb.label?.length > 0 && deb.value > 0) || [];
+        debt?.forEach((deb) => totalExpenditure += deb.value);
+        let data = {
+            [`${this.month}`]: {
+                expenditure: this.expenditure,
+                income: this.income,
+                debt,
+                ieRating: totalExpenditure / totalIncome,
+                disposableIncome: totalIncome - totalExpenditure
+            }
+        };
 
         writeToCollection('ieStatement', this.uid, data).then((ret) => {
             this.showAlert = true;
@@ -67,6 +78,12 @@ export class NewEntry extends React.Component<INewEntryProps> {
             } else {
                 this.expenditure[index].value = value ? parseInt(value) : 0;
             }
+        } else if (type === 'debt') {
+            if (attr === 'label') {
+                this.debt[index].label = value;
+            } else {
+                this.debt[index].value = value ? parseInt(value) : 0;
+            }
         }
         this.validateSaveButton();
     }
@@ -76,8 +93,11 @@ export class NewEntry extends React.Component<INewEntryProps> {
             this.income.push({ label: '', value: 0 });
         } else if (attr === 'expenditure') {
             this.expenditure.push({ label: '', value: 0 });
+        } else if (attr === 'debt') {
+            this.debt.push({ label: '', value: 0 });
         }
         this.forceUpdate();
+        this.validateSaveButton();
     }
 
 
@@ -134,6 +154,21 @@ export class NewEntry extends React.Component<INewEntryProps> {
                         })}
                         <div className="button-container">
                             <IonButton shape="round" color="primary" onClick={() => this.addNewEntry('expenditure')}>
+                                <IonIcon size="large" icon={addOutline} />
+                            </IonButton>
+                        </div>
+                    </div>
+                    <div className="padding-container">
+                        <IonLabel>{`Debts (optional)`}</IonLabel>
+                        {this.debt.map((_item, index) => {
+                            return <div className="row-container">
+                                <IonInput placeholder="Label e.g Loan" type="text" onIonChange={(ev) => this.onItemChanged('debt', index, 'label', ev.detail.value as string)} />
+                                <div className="text">£</div>
+                                <IonInput placeholder="Amount" type="number" onIonChange={(ev) => this.onItemChanged('debt', index, 'value', ev.detail.value as string)} />
+                            </div>
+                        })}
+                        <div className="button-container">
+                            <IonButton shape="round" color="primary" onClick={() => this.addNewEntry('debt')}>
                                 <IonIcon size="large" icon={addOutline} />
                             </IonButton>
                         </div>
