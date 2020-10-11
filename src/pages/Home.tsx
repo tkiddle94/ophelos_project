@@ -12,6 +12,7 @@ const Home: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState('');
   const [income, setIncome] = useState([{ label: '', value: 0 }]);
   const [expenditure, setExpenditure] = useState([{ label: '', value: 0 }]);
+  const [debt, setDebt] = useState([{ label: '', value: 0 }]);
   const [ieRatingClass, setIeRatingClass] = useState('');
   const [showNewEntry, setShowNewEntry] = useState(false);
   const [disposableIncome, setDisposableIncome] = useState(0);
@@ -34,6 +35,7 @@ const Home: React.FC = () => {
           if (ret[`${currentMonth}`]) {
             setIncome(ret[`${currentMonth}`].income);
             setExpenditure(ret[`${currentMonth}`].expenditure);
+            setDebt(ret[`${currentMonth}`].debt);
             setDisposableIncome(ret[`${currentMonth}`].disposableIncome);
             const rating = Math.round((ret[`${currentMonth}`].ieRating * 100));
             setIeRating(rating);
@@ -84,18 +86,18 @@ const Home: React.FC = () => {
       </IonHeader>
 
       <IonContent>
-        {currentMonth?.length > 0 && <div className="container">
+        {currentMonth?.length > 0 && <div className="container-home">
           <div className="title">
-            {`Selected Month`}
+            {`Selected Month:`}
           </div>
           <div className="sub-title">
-            <IonDatetime placeholder={currentMonth} displayFormat={"MMM YYYY"} onIonChange={(ev) => {
+            <IonDatetime  value={currentMonth} displayFormat={"MMM YYYY"} onIonChange={(ev) => {
               setCurrentMonth(ev.detail.value?.slice(0, 7) as string);
             }} />
           </div>
         </div>}
         {ieRating !== -1 &&
-          <div className="container">
+          <div className="container-home">
             <div className="title">
               {`Selected Month's I&E Rating:`}
             </div>
@@ -107,7 +109,7 @@ const Home: React.FC = () => {
             </div>
           </div>}
         {ieRating !== -1 &&
-          <div className="container">
+          <div className="container-home">
             <div className="title">
               {`Selected Month's Disposable Income:`}
             </div>
@@ -115,7 +117,7 @@ const Home: React.FC = () => {
               £{disposableIncome}
             </div>
           </div>}
-        {income[0]?.label?.length > 0 && <div className="container">
+        {income[0]?.label?.length > 0 && <div className="container-home">
           <div className="title">Income:</div>
           {income?.map((inc) => {
             return <div className="row">
@@ -129,7 +131,7 @@ const Home: React.FC = () => {
           })}
         </div>
         }
-        {expenditure[0]?.label?.length > 0 && <div className="container">
+        {expenditure[0]?.label?.length > 0 && <div className="container-home">
           <div className="title">Expenditure:</div>
           {expenditure?.map((exp) => {
             return <div className="row">
@@ -142,11 +144,25 @@ const Home: React.FC = () => {
             </div>
           })}
         </div>}
-        {ieRating === -1 && <div className="container">
+        {debt && debt[0]?.label?.length > 0 && <div className="container-home">
+          <div className="title">Debt:</div>
+          {debt?.map((exp) => {
+            return <div className="row">
+              <div className="label">
+                {exp.label}
+              </div>
+              <div className="value">
+                £{exp.value}
+              </div>
+            </div>
+          })}
+        </div>}
+        {ieRating === -1 && <div className="container-home">
           <div className="title">
             Looks like you have not added your statement for this month, click below to add...
           </div>
         </div>}
+        <div className="spacer" />
       </IonContent>
       <IonButton expand="full" color="secondary" onClick={() => setShowNewEntry(true)}>
         Add an entry
