@@ -51,6 +51,7 @@ const Home: React.FC = () => {
           } else {
             setIncome([{ label: '', value: 0 }]);
             setExpenditure([{ label: '', value: 0 }]);
+            setDebt([{ label: '', value: 0 }]);
             setIeRatingClass('');
             setDisposableIncome(0);
             setIeRating(-1);
@@ -88,7 +89,7 @@ const Home: React.FC = () => {
       <IonContent>
         {currentMonth?.length > 0 && <div className="container-home">
           <div className="title">
-            {`Selected Month:`}
+            {`Selected Month (change below):`}
           </div>
           <div className="sub-title">
             <IonDatetime  value={currentMonth} displayFormat={"MMM YYYY"} onIonChange={(ev) => {
